@@ -2,9 +2,9 @@ import { ReactNode, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
-interface Props {
+type Props = {
   children: ReactNode;
-}
+};
 
 export function ThemeProvider({ children }: Props) {
   const [theme, setTheme] = useState<Theme>("light");

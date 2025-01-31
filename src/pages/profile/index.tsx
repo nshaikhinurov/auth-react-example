@@ -1,20 +1,19 @@
-import { useProfile } from "~/features/auth/model/use-auth";
+import { motion } from "motion/react";
+import { useCallback } from "react";
+import { useNavigate } from "react-router";
+import { logout, useProfile } from "~/features/auth/model/use-auth";
+import { LoadingView } from "./ui/loading-view";
 import { ProfileView } from "./ui/profile-view";
 
 export function ProfilePage() {
-  const { data, isLoading, isError, error } = useProfile();
+  const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <div className="p-8">
-        {/* Skeleton */}
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-300 rounded w-1/3 mb-2"></div>
-        </div>
-      </div>
-    );
-  }
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate("/auth");
+  }, [navigate]);
+
+  const { data, isLoading, isError, error } = useProfile();
 
   if (isError) {
     // Можно показать ошибку. error.response?.data?.message
@@ -25,9 +24,25 @@ export function ProfilePage() {
     );
   }
 
-  if (!data) {
-    return null;
-  }
-
-  return <ProfileView email={data.email} id={data.id} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 2, transition: { duration: 0.3 } }}
+      transition={{ duration: 0.5 }}
+      className="w-full flex flex-col items-center max-w-96"
+    >
+      {isLoading ? (
+        <LoadingView />
+      ) : (
+        data && (
+          <ProfileView
+            email={data.email}
+            id={data.id}
+            onLogout={handleLogout}
+          />
+        )
+      )}
+    </motion.div>
+  );
 }

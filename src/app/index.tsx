@@ -6,6 +6,7 @@ import { AppRouter } from "./routers";
 import { QueryProvider } from "./providers/query-provider";
 import { ToastProvider } from "./providers/toast-provider";
 import { ThemeProvider } from "./providers/theme-provider";
+import { Layout } from "~/widgets/layout";
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
       <QueryProvider>
         <ThemeProvider>
           <ToastProvider>
-            <AppRouter />
+            <Layout>
+              <AppRouter />
+            </Layout>
           </ToastProvider>
         </ThemeProvider>
       </QueryProvider>
