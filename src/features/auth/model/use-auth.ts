@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { loginRequest, registerRequest, getProfileRequest } from "../api";
+import { loginRequest, registerRequest, getProfileRequest } from "..";
 import { setCookie, deleteCookie } from "~/shared/lib/cookies";
 
 // Запрос профиля

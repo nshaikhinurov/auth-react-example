@@ -12,7 +12,7 @@ function App() {
   return (
     <BrowserRouter>
       <QueryProvider>
-        <ThemeProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <ToastProvider>
             <Layout>
               <AppRouter />
