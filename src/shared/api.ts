@@ -7,6 +7,7 @@ export const api = axios.create({
 // Interceptor: при каждом запросе подтягиваем token из cookies и выставляем в Authorization
 api.interceptors.request.use((config) => {
   const token = getTokenFromCookie("token"); // условная функция
+
   if (token && config.headers) {
     config.headers.Authorization = token;
   }
@@ -22,5 +23,6 @@ function getTokenFromCookie(name: string) {
         "=([^;]*)"
     )
   );
+
   return matches ? decodeURIComponent(matches[1]) : "";
 }

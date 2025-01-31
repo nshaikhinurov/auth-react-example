@@ -1,8 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios, { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { AuthError } from "~/features/auth";
 import { useLogin, useRegister } from "~/features/auth/model/use-auth";
 import { useToast } from "~/shared/lib/use-toast";
 import { Button } from "~/shared/ui/button";
@@ -23,7 +25,7 @@ import {
 } from "~/shared/ui/form";
 import { Input } from "~/shared/ui/input";
 
-// Validation schemas for login and register forms
+// Схемы валидации для формы
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -70,13 +72,27 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
         { email: data.email, password: data.password },
         {
           onSuccess,
-          onError: (error) => {
-            console.log("🚀 ~ onSubmit ~ error:", error);
+          onError: (error: unknown) => {
+            // Проверяем, что это AxiosError
+            if (axios.isAxiosError(error)) {
+              // Извлекаем серверный ответ (данные об ошибке)
+              const serverError = error.response?.data as AuthError | undefined;
+
+              toast({
+                variant: "destructive",
+                title: "Login Error",
+                description: serverError?.message ?? "Login failed",
+                duration: 3000,
+              });
+
+              return;
+            }
+
+            // На случай, если это не axios-ошибка
             toast({
               variant: "destructive",
-              title: error.name || "Error",
-              description: error.message || "Login failed",
-              duration: 3000,
+              title: "Login Error",
+              description: "Unknown error...",
             });
           },
         }
@@ -86,11 +102,23 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
         { email: data.email, password: data.password },
         {
           onError: (error: any) => {
+            if (axios.isAxiosError(error)) {
+              const serverError = error.response?.data as AuthError | undefined;
+
+              toast({
+                variant: "destructive",
+                title: "Register Error",
+                description: serverError?.message ?? "Register failed",
+                duration: 3000,
+              });
+
+              return;
+            }
+
             toast({
               variant: "destructive",
-              title: error.name || "Error",
-              description: error.message || "Register failed",
-              duration: 3000,
+              title: "Register Error",
+              description: "Unknown error...",
             });
           },
         }
