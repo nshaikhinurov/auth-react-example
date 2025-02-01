@@ -1,11 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { AuthError } from "~/features/auth";
-import { useLogin, useRegister } from "~/features/auth/model/use-auth";
+import { AuthError, useLogin, useRegister } from "~/features/auth";
 import { useToast } from "~/shared/lib/use-toast";
 import { Button } from "~/shared/ui/button";
 import {
@@ -101,6 +100,7 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
       registerMutation.mutate(
         { email: data.email, password: data.password },
         {
+          onSuccess,
           onError: (error: any) => {
             if (axios.isAxiosError(error)) {
               const serverError = error.response?.data as AuthError | undefined;

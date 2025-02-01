@@ -1,9 +1,19 @@
 import { motion } from "motion/react";
 import { AuthForm } from "./ui/auth-form";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useToast } from "~/shared/lib/use-toast";
 
 export function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (location.state?.from === "/profile" && location.state.toastProps) {
+      toast(location.state.toastProps);
+    }
+  }, [location.state]);
 
   return (
     <motion.div

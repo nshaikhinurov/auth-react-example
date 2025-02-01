@@ -1,12 +1,14 @@
+import axios from "axios";
 import { motion } from "motion/react";
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
-import { logout, useProfile } from "~/features/auth/model/use-auth";
+import { AuthError, useLogout, useProfile } from "~/features/auth";
 import { LoadingView } from "./ui/loading-view";
 import { ProfileView } from "./ui/profile-view";
 
 export function ProfilePage() {
   const navigate = useNavigate();
+  const logout = useLogout();
 
   const handleLogout = useCallback(() => {
     logout();
@@ -15,13 +17,24 @@ export function ProfilePage() {
 
   const { data, isLoading, isError, error } = useProfile();
 
-  if (isError) {
-    // Можно показать ошибку. error.response?.data?.message
-    return (
-      <div className="p-8 text-red-500">
-        Failed to load profile. Possibly not authorized.
-      </div>
-    );
+  if (isError && error && axios.isAxiosError(error)) {
+    const serverError = error.response?.data as AuthError | undefined;
+
+    navigate("/auth", {
+      state: {
+        from: "/profile",
+        toastProps: {
+          variant: "destructive",
+          title: "Profile Error",
+          description:
+            serverError?.message ??
+            "Failed to load profile. Possibly not authorized.",
+          duration: 5000,
+        },
+      },
+    });
+
+    return null;
   }
 
   return (
